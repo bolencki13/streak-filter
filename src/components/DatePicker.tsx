@@ -9,15 +9,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { ElementRef, forwardRef, PropsWithChildren, Ref } from "react"
 
 export namespace DatePicker {
   export type Props = {
     value?: Date | null;
-    onChange: (val: Date | null) => void;
+    onChange?: (val: Date | null) => void;
   }
 }
 
-export function DatePicker(props: DatePicker.Props) {
+function DatePickerComp(
+  props: DatePicker.Props,
+  outerRef: Ref<ElementRef<"button">>
+) {
   /**
    * Render
    */
@@ -25,6 +29,7 @@ export function DatePicker(props: DatePicker.Props) {
     <Popover>
       <PopoverTrigger asChild>
         <Button
+          ref={outerRef}
           variant={"outline"}
           className={cn(
             "w-[280px] justify-start text-left font-normal",
@@ -48,3 +53,12 @@ export function DatePicker(props: DatePicker.Props) {
     </Popover>
   )
 }
+
+export const DatePicker = forwardRef<
+  ElementRef<"button">,
+  PropsWithChildren<DatePicker.Props>
+>(DatePickerComp) as any as (
+  props: PropsWithChildren<DatePicker.Props> & {
+    ref?: Ref<ElementRef<"button">>;
+  },
+) => ReturnType<typeof DatePickerComp>;

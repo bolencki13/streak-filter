@@ -1,4 +1,4 @@
-import { type PropsWithChildren, useState } from "react";
+import { ElementRef, forwardRef, type PropsWithChildren, Ref, useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,12 +36,14 @@ export namespace MultiSelect {
   };
 }
 
-export const MultiSelect = function <T>({
+const MultiSelectComp = function <T>({
   placeholder = "Select...",
   optionMatchResolver = (option, value) => option.value === value,
   defaultOpen = false,
   ...props
-}: PropsWithChildren<MultiSelect.Props<T>>) {
+}: PropsWithChildren<MultiSelect.Props<T>>,
+  outerRef: Ref<ElementRef<"button">>,
+) {
   /**
    * State vars
    */
@@ -58,6 +60,7 @@ export const MultiSelect = function <T>({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild disabled={props.disabled}>
         <Button
+          ref={outerRef}
           variant="outline"
           role="combobox"
           aria-expanded={open}
@@ -93,7 +96,7 @@ export const MultiSelect = function <T>({
             </p>
           </CommandEmpty>
           <CommandList>
-            <CommandGroup>
+            <CommandGroup className="max-h-52 overflow-auto">
               {props.options.map((option) => (
                 <CommandItem
                   key={option.label}
@@ -137,3 +140,12 @@ export const MultiSelect = function <T>({
     </Popover>
   );
 };
+
+export const MultiSelect = forwardRef<
+  ElementRef<"button">,
+  PropsWithChildren<MultiSelect.Props<any>>
+>(MultiSelectComp) as any as <T>(
+  props: PropsWithChildren<MultiSelect.Props<T>> & {
+    ref?: Ref<ElementRef<"button">>;
+  },
+) => ReturnType<typeof MultiSelectComp<T>>;
