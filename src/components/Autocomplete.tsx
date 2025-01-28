@@ -81,6 +81,8 @@ function AutocompleteComp<T>(
     <div ref={refPortalContainer}>
       <Input
         ref={innerRef}
+        disabled={props.disabled}
+        placeholder={props.placeholder}
         onBlur={() => setIsFocused(false)}
         onFocus={() => setIsFocused(true)}
         value={search}
