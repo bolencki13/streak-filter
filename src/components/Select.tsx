@@ -26,7 +26,6 @@ export namespace Select {
   export type Props<T> = {
     options: {
       label: string;
-      description?: string | null;
       value: T;
     }[];
     value?: T;
@@ -136,13 +135,6 @@ function SelectComp<T>(
                   />
                   <div className="text-left">
                     {option.label}
-                    {option.description ? (
-                      <p
-                        className="text-xs text-muted-foreground"
-                      >
-                        {option.description}
-                      </p>
-                    ) : null}
                   </div>
                 </CommandItem>
               ))}
