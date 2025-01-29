@@ -96,7 +96,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
     }
 
     refColumnField.current.focus()
-  }, [props.clause?.id])
+  }, [props.clause])
 
   /**
    * Render
@@ -111,6 +111,23 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
           const key = e.key.toLowerCase();
           if (key === 'backspace' && (e.ctrlKey || e.metaKey) && props.clause) {
             filterInput.deleteClause(props.clause)
+          }
+
+          if (refColumnField.current === document.activeElement && key === 'tab' && e.shiftKey) {
+            let currentEditIndex = filterInput.clauses.length;
+            if (props.clause) {
+              currentEditIndex = filterInput.clauses.findIndex((clause) => {
+                return props.clause?.id === clause.id
+              })
+            }
+
+            if (currentEditIndex >= 0) {
+              const nextEditClause = filterInput.clauses[Math.max(currentEditIndex - 1, 0)];
+              filterInput.setEditableClause(nextEditClause)
+            }
+
+            e.preventDefault()
+            e.stopPropagation()
           }
         }}
       >
