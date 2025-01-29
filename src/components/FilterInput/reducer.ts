@@ -39,6 +39,12 @@ export function handleAction(state: FilterInputReducer.Value, action: FilterInpu
       nextState.clauses = nextState.clauses.filter((clause) => {
         return clause.id !== action.payload.id
       })
+      nextState.editId = null;
+      return nextState
+    }
+    case 'set-editable-clause': {
+      const nextState = structuredClone(state);
+      nextState.editId = action.payload?.id ?? null;
       return nextState
     }
     default:

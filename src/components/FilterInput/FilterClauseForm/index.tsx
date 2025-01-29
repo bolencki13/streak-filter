@@ -34,7 +34,6 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
   const refColumnField = useRef<ElementRef<'input'>>(null);
 
   const filterInput = useFilterInput();
-  const { columns } = useFilterInput();
   const form = useForm<FilterClauseForm.Form>({
     values: {
       columnField: props.clause?.column.field ?? '',
@@ -46,10 +45,10 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
   const columnField = form.watch('columnField')
 
   const chosenColumn = useMemo(() => {
-    return columns.find((col) => {
+    return filterInput.columns.find((col) => {
       return col.field === columnField
     })
-  }, [columns, columnField])
+  }, [filterInput.columns, columnField])
 
   /**
    * Helper funcs
@@ -66,12 +65,26 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
         column: chosenColumn
       } as Omit<FilterClauseDef, 'id'>)
     }
+
+    let currentEditIndex = filterInput.clauses.length;
+    if (props.clause) {
+      currentEditIndex = filterInput.clauses.findIndex((clause) => {
+        return props.clause?.id === clause.id
+      })
+    }
+
+    if (currentEditIndex >= filterInput.clauses.length) {
+      filterInput.setEditableClause(null)
+    } else {
+      const nextEditClause = filterInput.clauses[Math.min(currentEditIndex + 1, filterInput.clauses.length)];
+      filterInput.setEditableClause(nextEditClause)
+    }
     form.reset()
 
     if (refColumnField.current) {
       refColumnField.current.focus()
     }
-  }, [props.clause, chosenColumn])
+  }, [props.clause, chosenColumn, filterInput.clauses, filterInput.addClause, filterInput.updateClause, filterInput.setEditableClause, form.reset])
 
   /**
    * Side effects
@@ -82,7 +95,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
     }
 
     refColumnField.current.focus()
-  }, [])
+  }, [props.clause?.id])
 
   /**
    * Render
@@ -110,7 +123,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                   placeholder="Select..."
                   {...field}
                   ref={refColumnField}
-                  options={columns.map((col) => {
+                  options={filterInput.columns.map((col) => {
                     return {
                       label: capitalize(col.field).split('_').join(' '),
                       value: col.field
@@ -119,7 +132,6 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                   onChange={(val) => {
                     field.onChange(val)
                     form.setValue('operator', '')
-                    form.setValue('value', '')
                   }}
                   tabIndex={1}
                 />
@@ -201,11 +213,11 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                                 options={[
                                   {
                                     label: 'true',
-                                    value: true
+                                    value: 'true'
                                   },
                                   {
                                     label: 'false',
-                                    value: false
+                                    value: 'false'
                                   },
                                 ]}
                                 {...field}
