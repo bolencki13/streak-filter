@@ -1,15 +1,16 @@
 import { capitalize } from "@/lib/utils";
 import { useFilterInput } from "../context"
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Select } from "../../Select";
 import { getOperatorsForColumnType } from "./helpers";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/DatePicker";
 import { MultiSelect } from "@/components/MultiSelect";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Autocomplete } from "@/components/Autocomplete";
 
 export namespace FilterClauseForm {
   export type Props = {
@@ -46,19 +47,29 @@ export function FilterClauseForm() {
   }, [columns, columnField])
 
   /**
+   * Helper funcs
+   */
+  const handleSubmit: SubmitHandler<FilterClauseForm.Form> = useCallback((values) => {
+    console.log('submitted', values)
+  }, [])
+
+  /**
    * Render
    */
   return (
     <Form
       {...form}>
-      <div className="flex flex-nowrap gap-1.5">
+      <div
+        className="flex flex-nowrap gap-1.5"
+      >
         <FormField
           control={form.control}
           name="columnField"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Select
+                <Autocomplete
+                  placeholder="Select..."
                   {...field}
                   options={columns.map((col) => {
                     return {
@@ -71,6 +82,7 @@ export function FilterClauseForm() {
                     form.setValue('operator', '')
                     form.setValue('value', '')
                   }}
+                  tabIndex={1}
                 />
               </FormControl>
               <FormMessage />
@@ -83,7 +95,8 @@ export function FilterClauseForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Select
+                <Autocomplete
+                  placeholder="None"
                   disabled={!chosenColumn}
                   options={
                     chosenColumn
@@ -91,6 +104,7 @@ export function FilterClauseForm() {
                       : []
                   }
                   {...field}
+                  tabIndex={2}
                 />
               </FormControl>
               <FormMessage />
@@ -104,12 +118,11 @@ export function FilterClauseForm() {
             <FormItem>
               <FormControl onKeyDown={(e) => {
                 const key = e.key.toLowerCase();
-                console.log(key)
-                if (['tab'].includes(key)) {
+                if (['tab'].includes(key) && !e.shiftKey) {
                   e.preventDefault();
                   e.stopPropagation();
 
-                  console.log('tabing')
+                  form.handleSubmit(handleSubmit)()
                 }
               }}>
                 {
@@ -123,12 +136,14 @@ export function FilterClauseForm() {
                     : chosenColumn.type === 'string'
                       ? (
                         <Input
+                          tabIndex={3}
                           {...field}
                         />
                       )
                       : chosenColumn.type === 'number'
                         ? (
                           <Input
+                            tabIndex={3}
                             type="number"
                             {...field}
                           />

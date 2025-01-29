@@ -37,7 +37,7 @@ export namespace Autocomplete {
       option: Autocomplete.Props<T>["options"][number],
       value: Autocomplete.Props<T>["value"],
     ) => boolean;
-  };
+  } & Pick<React.HTMLAttributes<HTMLInputElement>, 'tabIndex'>;
 }
 
 function AutocompleteComp<T>(
@@ -141,6 +141,7 @@ function AutocompleteComp<T>(
           setIsFocused(true)
         }}
         value={search}
+        tabIndex={props.tabIndex}
         onKeyDown={(e) => {
           const key = e.key.toLowerCase()
           if (key === 'arrowdown') {
@@ -166,6 +167,7 @@ function AutocompleteComp<T>(
         refPortalContainer.current && isFocused
           ? (
             <Command
+              tabIndex={-1}
               id="command-list"
               shouldFilter={false}
               className="absolute border border-input rounded-md bg-popover min-h-6 max-h-32 w-56 mt-3 overflow-auto shadow-md"
