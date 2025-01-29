@@ -5,8 +5,6 @@ import { FilterInputColumnDef } from "./types";
 import { FilterClauseForm } from "./FilterClauseForm";
 import { Label } from "../ui/label";
 import { addClause, DEFAULT_STATE, deleteClause, handleAction, setEditableClause, updateClause } from "./reducer";
-import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FilterClauseView } from "./FilterClauseView";
 
@@ -48,12 +46,6 @@ export function FilterInput(props: FilterInput.Props) {
       <div className="flex flex-col min-w-96 gap-3">
         <div className="flex items-end justify-between">
           <Label>In this view show records where</Label>
-          <Button
-            size="icon"
-            className="size-6"
-          >
-            <Plus />
-          </Button>
         </div>
         <Card className={cn("flex-1 px-3 py-1.5 flex flex-wrap gap-1.5 min-h-12", state.clauses.length < 1 && 'items-center')}>
           {
