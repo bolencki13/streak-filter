@@ -8,3 +8,14 @@ export function cn(...inputs: ClassValue[]) {
 export function capitalize(str: string) {
   return str.substring(0, 1).toUpperCase() + str.substring(1);
 }
+
+export function isChildOfParent(child: Element, parent: Element): boolean {
+  let node = child.parentNode;
+  while (node != null) {
+    if (node === parent) {
+      return true;
+    }
+    node = node.parentNode;
+  }
+  return false;
+}

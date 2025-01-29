@@ -21,7 +21,7 @@ export namespace FilterClauseForm {
 const FormSchema = z.object({
   columnField: z.string().trim(),
   operator: z.string().trim(),
-  value: z.coerce.string()
+  value: z.string()
 })
 
 export function FilterClauseForm() {
@@ -151,8 +151,6 @@ export function FilterClauseForm() {
                           ? (
                             <DatePicker
                               {...field}
-                              value={field.value ? new Date(field.value) : null}
-                              onChange={(val) => field.onChange(val?.toISOString())}
                             />
                           )
                           : chosenColumn.type === 'boolean'
