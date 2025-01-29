@@ -4,42 +4,42 @@ import { BooleanOperatorEnum, DateOperatorEnum, MultiSelectOperatorEnum, NumberO
 export function getOperatorsForColumnType(column: FilterInputColumnDef) {
   switch (column.type) {
     case 'string': {
-      return Object.entries(StringOperatorEnum).map(([key, val]) => {
+      return Object.values(StringOperatorEnum).map((val) => {
         return {
           label: val,
-          value: key
+          value: val
         }
       })
     }
     case 'number': {
-      return Object.entries(NumberOperatorEnum).map(([key, val]) => {
+      return Object.values(NumberOperatorEnum).map((val) => {
         return {
           label: val,
-          value: key
+          value: val
         }
       })
     }
     case 'boolean': {
-      return Object.entries(BooleanOperatorEnum).map(([key, val]) => {
+      return Object.values(BooleanOperatorEnum).map((val) => {
         return {
           label: val,
-          value: key
+          value: val
         }
       })
     }
     case 'date': {
-      return Object.entries(DateOperatorEnum).map(([key, val]) => {
+      return Object.values(DateOperatorEnum).map((val) => {
         return {
           label: val,
-          value: key
+          value: val
         }
       })
     }
     case 'multi-select': {
-      return Object.entries(MultiSelectOperatorEnum).map(([key, val]) => {
+      return Object.values(MultiSelectOperatorEnum).map((val) => {
         return {
           label: val,
-          value: key
+          value: val
         }
       })
     }

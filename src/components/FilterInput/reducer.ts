@@ -9,7 +9,7 @@ export namespace FilterInputReducer {
 }
 
 export const DEFAULT_STATE: FilterInputReducer.Value = {
-  clauses: []
+  clauses: [],
 }
 
 export function handleAction(state: FilterInputReducer.Value, action: FilterInputReducer.Action) {

@@ -11,8 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Autocomplete } from "@/components/Autocomplete";
 import { MultiAutocomplete } from "@/components/MultiAutocomplete";
 import { FilterClauseDef } from "../types";
-import { Button } from "@/components/ui/button";
-import { Command, Delete, MoreVerticalIcon, Trash2 } from "lucide-react";
+import { Command, Delete, MoreVerticalIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export namespace FilterClauseForm {
@@ -25,7 +24,7 @@ export namespace FilterClauseForm {
 const FormSchema = z.object({
   columnField: z.string().trim(),
   operator: z.string().trim(),
-  value: z.string()
+  value: z.coerce.string()
 })
 
 export function FilterClauseForm(props: FilterClauseForm.Props) {
@@ -57,7 +56,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
     if (props.clause) {
       filterInput.updateClause({
         ...props.clause,
-        ...values
+        ...values,
       } as FilterClauseDef)
     } else if (chosenColumn) {
       filterInput.addClause({
@@ -77,7 +76,6 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
       <div
         className="flex flex-nowrap gap-1.5"
         onKeyDown={(e) => {
-          console.log(e)
           const key = e.key.toLowerCase();
           if (key === 'backspace' && (e.ctrlKey || e.metaKey) && props.clause) {
             filterInput.deleteClause(props.clause)
@@ -173,6 +171,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                         : chosenColumn.type === 'date'
                           ? (
                             <DatePicker
+                              tabIndex={3}
                               {...field}
                             />
                           )
@@ -196,6 +195,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                             : chosenColumn.type === 'multi-select'
                               ? (
                                 <MultiAutocomplete
+                                  tabIndex={3}
                                   options={chosenColumn.options}
                                   {...field}
                                   value={field.value?.split('|')}

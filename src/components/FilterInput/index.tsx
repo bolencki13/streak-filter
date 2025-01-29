@@ -1,13 +1,14 @@
 import { useMemo, useReducer } from "react";
 import { Card } from "../ui/card";
 import { FilterInputContext } from "./context";
-import { FilterClauseDef, FilterInputColumnDef } from "./types";
+import { FilterInputColumnDef } from "./types";
 import { FilterClauseForm } from "./FilterClauseForm";
 import { Label } from "../ui/label";
 import { addClause, DEFAULT_STATE, deleteClause, handleAction, updateClause } from "./reducer";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FilterClauseView } from "./FilterClauseView";
 
 export namespace FilterInput {
   export type Props = {
@@ -39,6 +40,7 @@ export function FilterInput(props: FilterInput.Props) {
   /**
    * Render
    */
+  const editId = null;
   console.log(contextVal)
   return (
     <FilterInputContext.Provider value={contextVal}>
@@ -55,10 +57,21 @@ export function FilterInput(props: FilterInput.Props) {
         <Card className={cn("flex-1 px-3 py-1.5 flex flex-wrap gap-1.5 min-h-12", state.clauses.length < 1 && 'items-center')}>
           {
             state.clauses
-              .map((clause) => {
+              .map((clause, index) => {
+                const isEditing = clause.id === editId;
+                if (isEditing) {
+                  return (
+                    <FilterClauseForm
+                      key={clause.id}
+                      clause={clause}
+                    />
+                  )
+                }
+
                 return (
-                  <FilterClauseForm
+                  <FilterClauseView
                     key={clause.id}
+                    index={index}
                     clause={clause}
                   />
                 )
