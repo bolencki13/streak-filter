@@ -104,7 +104,12 @@ function AutocompleteComp<T>(
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [listIndex, isMouseInside])
+  }, [listIndex, isMouseInside]);
+  useEffect(() => {
+    if (!matchOption && !props.value) {
+      setSearch('')
+    }
+  }, [props.value, matchOption])
 
   /**
    * Render
