@@ -43,7 +43,9 @@ export function FilterClauseView(props: FilterClauseView.Props) {
         className="size-4"
         size="icon"
         variant="outline"
-        onClick={() => {
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation();
           filterInput.deleteClause(props.clause)
         }}
       >

@@ -11,8 +11,9 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Autocomplete } from "@/components/Autocomplete";
 import { MultiAutocomplete } from "@/components/MultiAutocomplete";
 import { FilterClauseDef } from "../types";
-import { Command, Delete, MoreVerticalIcon } from "lucide-react";
+import { CheckCircle, Command, Delete, MoreVerticalIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 export namespace FilterClauseForm {
   export type Props = {
@@ -247,6 +248,16 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
             </FormItem>
           )}
         />
+        <Button
+          size="icon"
+          className="size-6 mt-2"
+          variant="ghost"
+          onClick={() => {
+            form.handleSubmit(handleSubmit)()
+          }}
+        >
+          <CheckCircle />
+        </Button>
         {
           props.clause
             ? (
