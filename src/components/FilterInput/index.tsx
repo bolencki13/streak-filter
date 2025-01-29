@@ -4,7 +4,7 @@ import { FilterInputContext } from "./context";
 import { FilterInputColumnDef } from "./types";
 import { FilterClauseForm } from "./FilterClauseForm";
 import { Label } from "../ui/label";
-import { addClause, DEFAULT_STATE, deleteClause, handleAction, updateClause } from "./reducer";
+import { addClause, DEFAULT_STATE, deleteClause, handleAction, setEditableClause, updateClause } from "./reducer";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,14 +34,15 @@ export function FilterInput(props: FilterInput.Props) {
       deleteClause(clause) {
         dispatch(deleteClause(clause))
       },
+      setEditableClause(clause) {
+        dispatch(setEditableClause(clause))
+      }
     } satisfies FilterInputContext.Value;
   }, [props.columns, props.columns.length, dispatch])
 
   /**
    * Render
    */
-  const editId = null;
-  console.log(contextVal)
   return (
     <FilterInputContext.Provider value={contextVal}>
       <div className="flex flex-col min-w-96 gap-3">
@@ -58,7 +59,7 @@ export function FilterInput(props: FilterInput.Props) {
           {
             state.clauses
               .map((clause, index) => {
-                const isEditing = clause.id === editId;
+                const isEditing = clause.id === state.editId;
                 if (isEditing) {
                   return (
                     <FilterClauseForm
@@ -78,7 +79,7 @@ export function FilterInput(props: FilterInput.Props) {
               })
           }
           {
-            state.clauses.length < 1
+            state.clauses.length < 1 || !state.editId
               ? (
                 <FilterClauseForm />
               )

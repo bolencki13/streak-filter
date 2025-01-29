@@ -37,7 +37,7 @@ export namespace Autocomplete {
       option: Autocomplete.Props<T>["options"][number],
       value: Autocomplete.Props<T>["value"],
     ) => boolean;
-  } & Pick<React.HTMLAttributes<HTMLInputElement>, 'tabIndex' | "onKeyDown">;
+  } & Pick<React.HTMLAttributes<HTMLInputElement>, 'tabIndex' | "onKeyDown" | 'autoFocus'>;
 }
 
 function AutocompleteComp<T>(
@@ -119,6 +119,7 @@ function AutocompleteComp<T>(
       <Input
         ref={innerRef}
         disabled={props.disabled}
+        autoFocus={props.autoFocus}
         placeholder={props.placeholder}
         onBlur={(e) => {
           if (e.relatedTarget?.id === 'command-list') {

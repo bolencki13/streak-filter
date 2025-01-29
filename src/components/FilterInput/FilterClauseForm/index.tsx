@@ -1,6 +1,6 @@
 import { capitalize } from "@/lib/utils";
 import { useFilterInput } from "../context"
-import { useCallback, useMemo } from "react";
+import { ElementRef, useCallback, useEffect, useMemo, useRef } from "react";
 import { getOperatorsForColumnType } from "./helpers";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/DatePicker";
@@ -31,6 +31,8 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
   /**
    * State vars
    */
+  const refColumnField = useRef<ElementRef<'input'>>(null);
+
   const filterInput = useFilterInput();
   const { columns } = useFilterInput();
   const form = useForm<FilterClauseForm.Form>({
@@ -64,7 +66,23 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
         column: chosenColumn
       } as Omit<FilterClauseDef, 'id'>)
     }
+    form.reset()
+
+    if (refColumnField.current) {
+      refColumnField.current.focus()
+    }
   }, [props.clause, chosenColumn])
+
+  /**
+   * Side effects
+   */
+  useEffect(() => {
+    if (!refColumnField.current) {
+      return;
+    }
+
+    refColumnField.current.focus()
+  }, [])
 
   /**
    * Render
@@ -91,6 +109,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                 <Autocomplete
                   placeholder="Select..."
                   {...field}
+                  ref={refColumnField}
                   options={columns.map((col) => {
                     return {
                       label: capitalize(col.field).split('_').join(' '),

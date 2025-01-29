@@ -21,7 +21,10 @@ export function FilterClauseView(props: FilterClauseView.Props) {
    * Render
    */
   return (
-    <div className="flex items-center justify-center rounded-full py-1.5 px-3 bg-accent gap-1.5">
+    <div
+      className="flex items-center justify-center rounded-full py-1.5 px-3 bg-accent gap-1.5 cursor-pointer"
+      onClick={() => filterInput.setEditableClause(props.clause)}
+    >
       {
         props.index > 0
           ? (

@@ -3,13 +3,15 @@ import { FilterClauseDef } from "./types"
 export namespace FilterInputReducer {
   export type Value = {
     clauses: FilterClauseDef[];
+    editId: string | null;
   }
 
-  export type Action = ReturnType<typeof addClause> | ReturnType<typeof updateClause> | ReturnType<typeof deleteClause>;
+  export type Action = ReturnType<typeof addClause> | ReturnType<typeof updateClause> | ReturnType<typeof deleteClause> | ReturnType<typeof setEditableClause>;
 }
 
 export const DEFAULT_STATE: FilterInputReducer.Value = {
   clauses: [],
+  editId: null,
 }
 
 export function handleAction(state: FilterInputReducer.Value, action: FilterInputReducer.Action) {
@@ -59,6 +61,12 @@ export function updateClause(clause: FilterClauseDef) {
 export function deleteClause(clause: FilterClauseDef) {
   return {
     type: "delete-clause",
+    payload: clause,
+  } as const;
+}
+export function setEditableClause(clause: FilterClauseDef | null) {
+  return {
+    type: "set-editable-clause",
     payload: clause,
   } as const;
 }
