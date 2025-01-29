@@ -1,4 +1,4 @@
-import { useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 import { Card } from "../ui/card";
 import { FilterInputContext } from "./context";
 import { FilterInputColumnDef } from "./types";
@@ -11,6 +11,7 @@ import { FilterClauseView } from "./FilterClauseView";
 export namespace FilterInput {
   export type Props = {
     columns: FilterInputColumnDef[];
+    onChange?: (val: FilterInputContext.Value['clauses']) => void;
   }
 }
 
@@ -37,6 +38,13 @@ export function FilterInput(props: FilterInput.Props) {
       }
     } satisfies FilterInputContext.Value;
   }, [props.columns, props.columns.length, dispatch])
+
+  /**
+   * Side effects
+   */
+  useEffect(() => {
+    props.onChange?.(state.clauses)
+  }, [state.clauses])
 
   /**
    * Render

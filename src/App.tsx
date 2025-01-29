@@ -1,15 +1,22 @@
+import { useState } from "react";
 import { FilterInput } from "./components/FilterInput";
 import { PEOPLE } from "./data";
-
-console.log(PEOPLE)
+import { FilterClauseDef } from "./components/FilterInput/types";
+import { Label } from "./components/ui/label";
 
 export function App() {
+  /**
+   * State vars
+   */
+  const [val, setVal] = useState<FilterClauseDef[]>([]);
+
   /**
    * Render
    */
   return (
     <div className="min-h-screen flex items-center justify-center flex-col">
       <FilterInput
+        onChange={setVal}
         columns={
           [
             {
@@ -48,6 +55,14 @@ export function App() {
         }
       />
 
+      <div
+        className="mt-4"
+      >
+        <Label>Filter schema:</Label>
+        <pre>
+          {JSON.stringify(val, undefined, 2)}
+        </pre>
+      </div>
     </div>
   )
 }

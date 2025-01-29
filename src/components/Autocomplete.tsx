@@ -85,6 +85,9 @@ function AutocompleteComp<T>(
    * Helper funcs
    */
   const selectOption = useCallback((option: Autocomplete.Props<T>['options'][number]) => {
+    if (!option) {
+      return;
+    }
     props.onChange?.(
       option.value
     );
