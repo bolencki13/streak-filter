@@ -12,6 +12,22 @@ import { Calendar } from "./ui/calendar";
 import { isChildOfParent } from "@/lib/utils";
 import dayjs from 'dayjs'
 
+
+function parseDate(str: string): Date | null {
+  const parts = str.split('/')
+
+  if (parts.length !== 3) {
+    return null;
+  }
+
+  const date = dayjs(new Date(parseInt(parts[0]), Math.max(parseInt(parts[1]) - 1, 0), parseInt(parts[2]), 0, 0, 0))
+  if (date.isValid()) {
+    return date.toDate()
+  }
+
+  return null;
+}
+
 export namespace DatePicker {
   export type Props = {
     value?: string | null;
@@ -37,12 +53,14 @@ function DatePickerComp(
       return '';
     }
 
-    if (!dayjs(props.value).isValid()) {
-      return '';
+    const date = parseDate(props.value)
+    if (date) {
+      return props.value
     }
 
-    return dayjs(props.value).format('yyyy/MM/dd')
+    return ''
   })
+  const [month, setMonth] = useState(search && parseDate(search) ? (parseDate(search) ?? undefined) : undefined)
   const [isFocused, setIsFocused] = useState(false);
 
   /**
@@ -81,8 +99,9 @@ function DatePickerComp(
           const nextVal = e.currentTarget.value
           setSearch(nextVal);
 
-          if (dayjs(nextVal).isValid()) {
+          if (parseDate(nextVal)) {
             props.onChange?.(nextVal)
+            setMonth(parseDate(nextVal) ?? undefined)
           }
         }}
         pattern="[0-9]{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])"
@@ -99,12 +118,20 @@ function DatePickerComp(
                 id="calendar-picker"
                 className="absolute border border-input rounded-md bg-popover mt-3 overflow-auto shadow-md"
                 mode="single"
-                selected={search && dayjs(search).isValid() ? new Date(search) : undefined}
+                selected={search && parseDate(search) ? (parseDate(search) ?? undefined) : undefined}
                 onSelect={(val) => {
                   const nextVal = dayjs(val).format('YYYY/MM/DD')
-                  setSearch(nextVal)
+                  setSearch(nextVal);
+
+                  if (parseDate(nextVal)) {
+                    props.onChange?.(nextVal)
+                    setMonth(parseDate(nextVal) ?? undefined)
+                  }
                 }}
-                month={search && dayjs(search).isValid() ? new Date(search) : undefined}
+                month={month}
+                onMonthChange={(month) => {
+                  setMonth(month)
+                }}
               />
             </div>
           )
