@@ -7,6 +7,8 @@ import {
   useRef,
   useImperativeHandle,
   useMemo,
+  useEffect,
+  useCallback,
 } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -48,11 +50,12 @@ function AutocompleteComp<T>(
   /**
    * State vars
    */
-  const [isFocused, setIsFocused] = useState(false);
   const refPortalContainer = useRef<ElementRef<'div'>>(null);
   const innerRef = useRef<ElementRef<'input'>>(null)
   useImperativeHandle(outerRef, () => innerRef.current!);
 
+  const [isMouseInside, setIsMouseInside] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [listIndex, setListIndex] = useState(0)
 
   const matchOption = props.options.find((option) => {
@@ -72,7 +75,36 @@ function AutocompleteComp<T>(
       .filter((option) => {
         return option.label.toLowerCase().includes(search.toLowerCase())
       })
-  }, [props.options, props.options.length, search])
+  }, [props.options, search])
+
+  const renderedOptions = useMemo(() => {
+    return (search === matchOption?.label ? props.options : filteredOptions)
+  }, [props.options, matchOption, filteredOptions])
+
+  /**
+   * Helper funcs
+   */
+  const selectOption = useCallback((option: Autocomplete.Props<T>['options'][number]) => {
+    props.onChange?.(
+      option.value
+    );
+    setSearch(option.label);
+    innerRef.current?.focus()
+  }, [props.onChange, setSearch, setIsFocused])
+
+  /**
+   * Side effects
+   */
+  useEffect(() => {
+    if (isMouseInside) {
+      return
+    }
+
+    const el = document.getElementById(`item-${listIndex}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [listIndex, isMouseInside])
 
   /**
    * Render
@@ -83,14 +115,32 @@ function AutocompleteComp<T>(
         ref={innerRef}
         disabled={props.disabled}
         placeholder={props.placeholder}
-        onBlur={() => setIsFocused(false)}
-        onFocus={() => setIsFocused(true)}
+        onBlur={(e) => {
+          if (e.relatedTarget?.id === 'command-list') {
+            e.preventDefault()
+            e.stopPropagation()
+            return;
+          }
+          setListIndex(0)
+          setIsFocused(false)
+          setSearch(() => {
+            if (!matchOption) {
+              return ''
+            }
+
+            return matchOption.label
+          })
+        }}
+        onFocus={() => {
+          setListIndex(0)
+          setIsFocused(true)
+        }}
         value={search}
         onKeyDown={(e) => {
           const key = e.key.toLowerCase()
           if (key === 'arrowdown') {
             setListIndex((prev) => {
-              return Math.min(prev + 1, filteredOptions.length - 1)
+              return Math.min(prev + 1, renderedOptions.length - 1)
             })
             e.preventDefault();
           } else if (key === 'arrowup') {
@@ -99,11 +149,8 @@ function AutocompleteComp<T>(
             })
             e.preventDefault()
           } else if (key === 'enter') {
-            const nextOption = filteredOptions[listIndex]
-            props.onChange?.(
-              nextOption.value
-            );
-            setSearch(nextOption.label)
+            const nextOption = renderedOptions[listIndex]
+            selectOption(nextOption)
           }
         }}
         onChange={(e) => {
@@ -114,6 +161,7 @@ function AutocompleteComp<T>(
         refPortalContainer.current && isFocused
           ? (
             <Command
+              id="command-list"
               shouldFilter={false}
               className="absolute border border-input rounded-md bg-popover min-h-6 max-h-32 w-56 mt-3 overflow-auto shadow-md"
             >
@@ -128,16 +176,24 @@ function AutocompleteComp<T>(
                 <CommandEmpty className={"px-3 py-1.5"}>
                   No results.
                 </CommandEmpty>
-                <CommandGroup>
-                  {filteredOptions
+                <CommandGroup
+                  onMouseEnter={() => {
+                    setIsMouseInside(true)
+                  }}
+                  onMouseLeave={() => {
+                    setIsMouseInside(false)
+                  }}
+                >
+                  {renderedOptions
                     .map((option, index) => (
                       <CommandItem
                         key={option.label}
                         value={option.label}
-                        onSelect={() => {
-                          props.onChange?.(option.value);
-                        }}
+                        onMouseEnter={() => setListIndex(index)}
                         className={cn(index === listIndex ? 'bg-accent' : "bg-inherit data-[selected='true']:bg-inherit")}
+                        onSelect={() => {
+                          selectOption(option)
+                        }}
                       >
                         <Check
                           className={cn(
@@ -147,7 +203,10 @@ function AutocompleteComp<T>(
                               : "opacity-0",
                           )}
                         />
-                        <div className="text-left">
+                        <div
+                          id={`item-${index}`}
+                          className="text-left"
+                        >
                           {option.label}
                         </div>
                       </CommandItem>
