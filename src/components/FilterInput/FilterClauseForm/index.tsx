@@ -10,10 +10,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Autocomplete } from "@/components/Autocomplete";
 import { MultiAutocomplete } from "@/components/MultiAutocomplete";
+import { FilterClauseDef } from "../types";
 
 export namespace FilterClauseForm {
   export type Props = {
-    column_field?: string;
+    clause: FilterClauseDef;
   }
   export type Form = z.infer<typeof FormSchema>;
 }
@@ -24,16 +25,16 @@ const FormSchema = z.object({
   value: z.string()
 })
 
-export function FilterClauseForm() {
+export function FilterClauseForm(props: FilterClauseForm.Props) {
   /**
    * State vars
    */
   const { columns } = useFilterInput();
   const form = useForm<FilterClauseForm.Form>({
-    defaultValues: {
-      columnField: '',
-      operator: '',
-      value: '',
+    values: {
+      columnField: props.clause.column.field,
+      operator: props.clause.operator,
+      value: props.clause.value,
     },
     resolver: zodResolver(FormSchema)
   });
@@ -49,7 +50,7 @@ export function FilterClauseForm() {
    * Helper funcs
    */
   const handleSubmit: SubmitHandler<FilterClauseForm.Form> = useCallback((values) => {
-    console.log('submitted', values)
+
   }, [])
 
   /**

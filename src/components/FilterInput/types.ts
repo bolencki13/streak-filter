@@ -1,3 +1,5 @@
+import { BooleanOperatorEnum, DateOperatorEnum, MultiSelectOperatorEnum, NumberOperatorEnum, StringOperatorEnum } from "./FilterClauseForm/consts";
+
 type FilterInputColumnDefBase = {
   field: string;
 }
@@ -20,3 +22,20 @@ type FilterInputColumnDefMultiSelect<T = unknown> = FilterInputColumnDefBase & {
 }
 
 export type FilterInputColumnDef = FilterInputColumnDefString | FilterInputColumnDefNumber | FilterInputColumnDefDate | FilterInputColumnDefBoolean | FilterInputColumnDefMultiSelect;
+
+export type FilterClauseDef<T extends FilterInputColumnDef = FilterInputColumnDef> = {
+  id: string;
+  column: T;
+  operator: T extends FilterInputColumnDefString
+  ? StringOperatorEnum
+  : T extends FilterInputColumnDefNumber
+  ? NumberOperatorEnum
+  : T extends FilterInputColumnDefDate
+  ? DateOperatorEnum
+  : T extends FilterInputColumnDefBoolean
+  ? BooleanOperatorEnum
+  : T extends FilterInputColumnDefMultiSelect
+  ? MultiSelectOperatorEnum
+  : unknown;
+  value: string;
+}
