@@ -11,10 +11,13 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Autocomplete } from "@/components/Autocomplete";
 import { MultiAutocomplete } from "@/components/MultiAutocomplete";
 import { FilterClauseDef } from "../types";
+import { Button } from "@/components/ui/button";
+import { Command, Delete, MoreVerticalIcon, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export namespace FilterClauseForm {
   export type Props = {
-    clause: FilterClauseDef;
+    clause?: FilterClauseDef;
   }
   export type Form = z.infer<typeof FormSchema>;
 }
@@ -29,12 +32,13 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
   /**
    * State vars
    */
+  const filterInput = useFilterInput();
   const { columns } = useFilterInput();
   const form = useForm<FilterClauseForm.Form>({
     values: {
-      columnField: props.clause.column.field,
-      operator: props.clause.operator,
-      value: props.clause.value,
+      columnField: props.clause?.column.field ?? '',
+      operator: props.clause?.operator ?? '',
+      value: props.clause?.value ?? '',
     },
     resolver: zodResolver(FormSchema)
   });
@@ -50,17 +54,35 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
    * Helper funcs
    */
   const handleSubmit: SubmitHandler<FilterClauseForm.Form> = useCallback((values) => {
-
-  }, [])
+    if (props.clause) {
+      filterInput.updateClause({
+        ...props.clause,
+        ...values
+      } as FilterClauseDef)
+    } else if (chosenColumn) {
+      filterInput.addClause({
+        ...values,
+        column: chosenColumn
+      } as Omit<FilterClauseDef, 'id'>)
+    }
+  }, [props.clause, chosenColumn])
 
   /**
    * Render
    */
   return (
     <Form
-      {...form}>
+      {...form}
+    >
       <div
         className="flex flex-nowrap gap-1.5"
+        onKeyDown={(e) => {
+          console.log(e)
+          const key = e.key.toLowerCase();
+          if (key === 'backspace' && (e.ctrlKey || e.metaKey) && props.clause) {
+            filterInput.deleteClause(props.clause)
+          }
+        }}
       >
         <FormField
           control={form.control}
@@ -194,6 +216,31 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
             </FormItem>
           )}
         />
+        {
+          props.clause
+            ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <MoreVerticalIcon />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem className="flex items-center justify-between cursor-pointer" onClick={() => {
+                    if (!props.clause) {
+                      return;
+                    }
+                    filterInput.deleteClause(props.clause)
+                  }}>
+                    Trash
+                    <div className="flex items-center flex-nowrap">
+                      <Command />
+                      <Delete />
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )
+            : null
+        }
       </div>
     </Form>
   )

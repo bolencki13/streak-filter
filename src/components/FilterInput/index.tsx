@@ -1,7 +1,7 @@
 import { useMemo, useReducer } from "react";
 import { Card } from "../ui/card";
 import { FilterInputContext } from "./context";
-import { FilterInputColumnDef } from "./types";
+import { FilterClauseDef, FilterInputColumnDef } from "./types";
 import { FilterClauseForm } from "./FilterClauseForm";
 import { Label } from "../ui/label";
 import { addClause, DEFAULT_STATE, deleteClause, handleAction, updateClause } from "./reducer";
@@ -39,12 +39,16 @@ export function FilterInput(props: FilterInput.Props) {
   /**
    * Render
    */
+  console.log(contextVal)
   return (
     <FilterInputContext.Provider value={contextVal}>
       <div className="flex flex-col min-w-96 gap-3">
         <div className="flex items-end justify-between">
           <Label>In this view show records where</Label>
-          <Button size="icon" className="size-6">
+          <Button
+            size="icon"
+            className="size-6"
+          >
             <Plus />
           </Button>
         </div>
@@ -54,6 +58,7 @@ export function FilterInput(props: FilterInput.Props) {
               .map((clause) => {
                 return (
                   <FilterClauseForm
+                    key={clause.id}
                     clause={clause}
                   />
                 )
@@ -62,7 +67,7 @@ export function FilterInput(props: FilterInput.Props) {
           {
             state.clauses.length < 1
               ? (
-                <p className="w-full text-muted-foreground text-center text-sm">Nothing to show.</p>
+                <FilterClauseForm />
               )
               : null
           }
