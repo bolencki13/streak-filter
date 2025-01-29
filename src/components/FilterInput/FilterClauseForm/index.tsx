@@ -1,16 +1,15 @@
 import { capitalize } from "@/lib/utils";
 import { useFilterInput } from "../context"
 import { useCallback, useMemo } from "react";
-import { Select } from "../../Select";
 import { getOperatorsForColumnType } from "./helpers";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/DatePicker";
-import { MultiSelect } from "@/components/MultiSelect";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Autocomplete } from "@/components/Autocomplete";
+import { MultiAutocomplete } from "@/components/MultiAutocomplete";
 
 export namespace FilterClauseForm {
   export type Props = {
@@ -175,7 +174,7 @@ export function FilterClauseForm() {
                             )
                             : chosenColumn.type === 'multi-select'
                               ? (
-                                <MultiSelect
+                                <MultiAutocomplete
                                   options={chosenColumn.options}
                                   {...field}
                                   value={field.value?.split('|')}
