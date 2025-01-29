@@ -81,10 +81,6 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
       filterInput.setEditableClause(nextEditClause)
     }
     form.reset()
-
-    if (refColumnField.current) {
-      refColumnField.current.focus()
-    }
   }, [props.clause, chosenColumn, filterInput.clauses, filterInput.addClause, filterInput.updateClause, filterInput.setEditableClause, form.reset])
 
   /**
@@ -138,7 +134,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
             <FormItem>
               <FormControl>
                 <Autocomplete
-                  placeholder="Select..."
+                  placeholder="Column"
                   {...field}
                   ref={refColumnField}
                   options={filterInput.columns.map((col) => {
@@ -149,7 +145,11 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                   })}
                   onChange={(val) => {
                     field.onChange(val)
-                    form.setValue('operator', '')
+
+                    if (val !== field.value) {
+                      form.setValue('operator', '')
+                      form.setValue('value', '')
+                    }
                   }}
                   tabIndex={1}
                 />
@@ -165,7 +165,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
             <FormItem>
               <FormControl>
                 <Autocomplete
-                  placeholder="None"
+                  placeholder="Operator"
                   disabled={!chosenColumn}
                   options={
                     chosenColumn
@@ -191,7 +191,11 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                   e.preventDefault();
                   e.stopPropagation();
 
-                  form.handleSubmit(handleSubmit)()
+                  form.handleSubmit(handleSubmit)();
+
+                  if (refColumnField.current) {
+                    refColumnField.current.focus()
+                  }
                 }
               }}>
                 {
@@ -199,6 +203,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                     ? (
                       <Input
                         disabled
+                        placeholder="Value"
                         {...field}
                       />
                     )
@@ -206,6 +211,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                       ? (
                         <Input
                           tabIndex={3}
+                          placeholder="Value"
                           {...field}
                         />
                       )
@@ -214,6 +220,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                           <Input
                             tabIndex={3}
                             type="number"
+                            placeholder="Value"
                             {...field}
                           />
                         )
@@ -228,6 +235,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                             ? (
                               <Autocomplete
                                 tabIndex={3}
+                                placeholder="Value"
                                 options={[
                                   {
                                     label: 'true',
@@ -245,6 +253,7 @@ export function FilterClauseForm(props: FilterClauseForm.Props) {
                               ? (
                                 <MultiAutocomplete
                                   tabIndex={3}
+                                  placeholder="Value"
                                   options={chosenColumn.options}
                                   {...field}
                                   value={field.value?.split('|')}
