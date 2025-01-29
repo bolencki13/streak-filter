@@ -37,7 +37,7 @@ export namespace Autocomplete {
       option: Autocomplete.Props<T>["options"][number],
       value: Autocomplete.Props<T>["value"],
     ) => boolean;
-  } & Pick<React.HTMLAttributes<HTMLInputElement>, 'tabIndex'>;
+  } & Pick<React.HTMLAttributes<HTMLInputElement>, 'tabIndex' | "onKeyDown">;
 }
 
 function AutocompleteComp<T>(
@@ -143,6 +143,7 @@ function AutocompleteComp<T>(
         value={search}
         tabIndex={props.tabIndex}
         onKeyDown={(e) => {
+          props.onKeyDown?.(e)
           const key = e.key.toLowerCase()
           if (key === 'arrowdown') {
             setListIndex((prev) => {

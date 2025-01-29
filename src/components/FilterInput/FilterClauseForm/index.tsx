@@ -158,7 +158,8 @@ export function FilterClauseForm() {
                           )
                           : chosenColumn.type === 'boolean'
                             ? (
-                              <Select
+                              <Autocomplete
+                                tabIndex={3}
                                 options={[
                                   {
                                     label: 'true',
